@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { Header } from './components';
 import { LoginData } from './type';
+import { signOut } from '../App/redux/actions/index';
 
 function RouteInterceptor({
   children,
@@ -39,10 +40,10 @@ const Loading: React.FC = () => (
   <div className="container" style={{marginTop: 40}}>Loading.....</div>
 );
 
-function App({ user }: { user: LoginData; }) {
+function App({ user, signOut }: { user: LoginData; signOut: any; }) {
   return (
     <div>
-      <Header />
+      <Header user={user} signOut={signOut} />
       <Switch>
         <Suspense fallback={<Loading />}>
           <Route
@@ -64,4 +65,8 @@ const mapStateToProps = ({ auth }: { auth: any }) => {
   return { user };
 };
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = {
+  signOut,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
