@@ -1,6 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { getAllShapes } from '../../App/redux/actions/index';
 import { FilterBar, FilterShapesBarButton, FilterColorsBarButton, FilterResultCard } from '../components';
-import shapes from '../../utils/data.json';
 
 const initialShapes = [
   "oval",
@@ -21,18 +22,36 @@ const initialColors = [
 
 function getTitle(activeColor: any, activeShapes: any) {
   if (activeColor.length === initialColors.length && activeShapes.length === initialShapes.length) {
-    return  "All items";
+    return  "All items.";
   }
 
-  // if 
+  if ((activeColor.length === 1 ) && (activeShapes.length === 1) ) {
+    return  `${activeColor[0]} ${activeShapes[0]} items.`;
+  }
+
+  if ((activeColor.length < initialColors.length && activeColor.length > 0 ) && (activeShapes.length === 1 ) ) {
+    return  `Multiple ${activeShapes[0]} items.`;
+  } 
+
+  if ((activeColor.length === 1 ) || (activeShapes.length < initialShapes.length && activeShapes.length > 0 ) ) {
+    return  `Multiple ${activeColor[0]} items.`;
+  }
+
+  if ((activeColor.length < initialColors.length && activeColor.length > 1 ) || (activeShapes.length < initialShapes.length && activeShapes.length > 1 ) ) {
+    return  "Multiple items.";
+  }
 }
 
-function App() {
+function Dashboard(props: any) {
+  const { shapes, getAllShapes } = props;
+  React.useEffect(() => {
+    getAllShapes()
+  } ,[getAllShapes])
   const [activeShapes, setActiveShapes] = React.useState(initialShapes);
 
   const [activeColor, setActiveColor] = React.useState(initialColors);
 
-  const data = shapes.filter(i => activeColor.includes(i.color) && activeShapes.includes(i.shape));
+  const data = shapes?.filter((i: any)=> activeColor.includes(i.color) && activeShapes.includes(i.shape)) || [];
 
   const handleShapes = (item: string) => {
     let newShapes;
@@ -81,7 +100,7 @@ function App() {
                 { name: "Square" },
                 { name: "Rectangle" },
               ].map(
-                (item, index) => (
+                (item: any, index: any) => (
                   <FilterShapesBarButton
                     key={index}
                     name={item.name}
@@ -104,7 +123,7 @@ function App() {
                 { name: "sky blue", color: "#bad1fd" },
                 { name: "gray", color: "#999999" },
               ].map(
-                (item, index) => (
+                (item: any, index: any) => (
                   <FilterColorsBarButton
                     key={index}
                     color={item.color}
@@ -118,11 +137,10 @@ function App() {
           </div>
         </FilterBar>
         <div>
-          <h3>All oval items. ({data.length})</h3>
+          <h3>{getTitle(activeColor, activeShapes)} ({data.length})</h3>
           <div className="filter-section_results">
-            {console.log(shapes.filter(i => activeColor.includes(i.color)))}
             {
-              data.map((item, index) => (
+              data.map((item: any, index: any) => (
                 <FilterResultCard
                   key={index}
                   color={item.color}
@@ -137,4 +155,13 @@ function App() {
   );
 }
 
-export default App;
+const mapStateToProps = ({ shapes }: { shapes: any }) => {
+  return { shapes: shapes.shapes };
+};
+
+const mapDispatchToProps = {
+  getAllShapes,
+};
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

@@ -1,4 +1,5 @@
 import * as Redux from 'redux';
+import shapes from '../../../utils/data.json';
 import { LoginData } from '../../type';
 import * as actionTypes from '../constants';
 
@@ -56,7 +57,7 @@ const GetAllShapes = () => async (dispatch: Redux.Dispatch<any>) => {
 
   dispatch({
     type: actionTypes.GET_ALL_SHAPES_SUCCESS,
-    // payload: data,
+    payload: shapes,
   });
 
 };
